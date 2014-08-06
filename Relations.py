@@ -1,4 +1,4 @@
-#
+#   
 # Gramps - a GTK+/GNOME based genealogy program - Family Sheet plugin
 #
 # Copyright (C) 2008,2009,2010 Reinhard Mueller
