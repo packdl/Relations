@@ -35,7 +35,7 @@ import string
 #------------------------------------------------------------------------
 #
 # GRAMPS modules
-#
+#  
 #------------------------------------------------------------------------
 from gramps.gen.display.name import displayer
 from gramps.gen.lib import Date, Event, EventType, FamilyRelType, Name
@@ -89,7 +89,7 @@ class Relations(Report):
         Report.__init__(self, database, options, user)
         menu = options.menu
         self.person_id    = menu.get_option_by_name('pid').get_value()
-	self.person2_id   = menu.get_option_by_name('pid2').get_value()
+        self.person2_id   = menu.get_option_by_name('pid2').get_value()
         self.recurse      = menu.get_option_by_name('recurse').get_value()
         self.callname     = menu.get_option_by_name('callname').get_value()
         self.placeholder  = menu.get_option_by_name('placeholder').get_value()
@@ -102,12 +102,9 @@ class Relations(Report):
         Build the actual report.
         """
         
-        relationship = get_relationship_calculator()
-
         person1 = self.database.get_person_from_gramps_id(self.person_id)
-	person2 = self.database.get_person_from_gramps_id(self.person2_id)
-	
-	self.__process_relationship(person1, person2)
+        person2 = self.database.get_person_from_gramps_id(self.person2_id)
+        self.__process_relationship(person1, person2)
         #(rank, ahnentafel, person_key) = self.__calc_person_key(person)
         #self.__process_person(person, rank, ahnentafel, person_key)
 
@@ -125,39 +122,64 @@ class Relations(Report):
         self.doc.start_row()
         self.doc.start_cell('FSR-HeadCell', 3)
         
-	self.doc.start_paragraph('FSR-Name')
-	self.doc.write_text("First Person\n")
+        self.doc.start_paragraph('FSR-Name')
+        self.doc.write_text("First Person\n")
         self.doc.end_paragraph()
         self.__dump_person(person1, False, None)
-	
-	self.doc.start_paragraph('FSR-Name')
-	self.doc.write_text("\nSecond Person\n")
-        self.doc.end_paragraph()
-	
-	self.__dump_person(person2, False, None)
 
-	
-	self.doc.start_paragraph('FSR-Name')
-	self.doc.write_text("\nCommon Ancestor\n")
+        self.doc.start_paragraph('FSR-Name')
+        self.doc.write_text("\nSecond Person\n")
+        self.doc.end_paragraph()
+        self.__dump_person(person2, False, None)
+        
+        self.doc.start_paragraph('FSR-Name')
+        relationship = get_relationship_calculator()
+        relate = "\nSecond person is the first person's " + relationship.get_one_relationship(self.database, person1, person2)
+        self.doc.write_text(relate)
         self.doc.end_paragraph()
 
-	relationship = get_relationship_calculator()
+        self.doc.start_paragraph('FSR-Name')
+        self.doc.write_text("\nCommon Ancestor\n")
+        self.doc.write_text("The common ancestors for Person 1 and Person 2 are ")
+        #firstAncestor = self.database.get_person_from_handle();
         info, msg = relationship.get_relationship_distance_new(
                 self.database, person1, person2, all_dist=True, only_birth=False)
-	
-	#self.doc.start_paragraph('FSR-Name')
-	print info
-	print msg
-	#self.doc.write_text(info)
-	#self.doc.write_text(msg)
 
-        #self.doc.end_paragraph()
-	
-	self.doc.end_cell()
+        self.doc.write_text(self.__process_ancestor_string(info))
+        self.doc.end_paragraph()
+
+        #relationship = get_relationship_calculator()
+        
+        #self.doc.start_paragraph('FSR-Name')
+        print('info:',info)
+        print('message:', msg)
+        
+                        
+        self.doc.end_cell()
         self.doc.end_row()
         self.doc.end_table()
 
-
+    def __process_ancestor_string(self, info): 
+        if type(info).__name__=='tuple':
+            return None
+        elif type(info).__name__=='list':
+            len(info)
+            
+            ancestorlist=[]
+            for relation in info:
+                rank = relation[0]
+                person_handle = relation[1]
+                if rank == -1:
+                    return None
+                ancestor = self.database.get_person_from_handle(person_handle)
+                name = ancestor.get_primary_name().get_regular_name()
+                ancestorlist.append(name)
+                
+            if len(ancestorlist)>0:  
+                return ' and '.join(ancestorlist)
+            else:
+                return None          
+                        
 
     def __process_person(self, person, rank, ahnentafel, person_key):
         """
@@ -750,7 +772,7 @@ def _Name_get_styled(name, callname, placeholder=False):
 
     return StyledText(text, tags)
 
-
+   
 def _Date_get_text(date, placeholder=False):
     """
     Return a textual representation of the date to be used in textual context,
@@ -759,8 +781,8 @@ def _Date_get_text(date, placeholder=False):
     @param placeholder: whether a series of underscores should be inserted as a
         placeholder if the date is missing or incomplete.
     """
-
-    text = gramps.gen.datehandler.displayer.display(date)
+    
+    text = gramps.gen.datehandler.displayer.display(date)  # @UndefinedVariable
 
     if date.get_modifier() == Date.MOD_NONE \
             and date.get_quality() == Date.QUAL_NONE:
