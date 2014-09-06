@@ -1,17 +1,12 @@
-register(REPORT,
-    id   = 'Relations',
-    name = _('Relations'),
-    description = _("Produces a relationship report about two individuals "
-                    "  "),
+register(GRAMPLET,
+    id   = 'QRCode Relationship Calculator Gramplet',
+    name = _('QRCode Relationship Calculator Gramplet'),
+    description = _("Determines the relationship between two individuals whose information is stored on two separate QRCodes"),
     version = '1.0',
     gramps_target_version = '4.1',
-    status = STABLE,
+    status = UNSTABLE,
     fname = 'Relations.py',
-    authors = ["Derik Pack"],
-    authors_email = ["bob@email.com"],
-    category = CATEGORY_TEXT,
-    reportclass = 'Relations',
-    optionclass = 'RelationsOptions',
-    report_modes = [REPORT_MODE_GUI],
-    require_active = True
-    )
+    include_in_listing = False,
+    gramplet = 'QRCodeRelationshipGramplet',
+    gramplet_title=_("QRCode Relationship Calculator Gramplet"),
+     )
